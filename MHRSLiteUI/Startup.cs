@@ -1,3 +1,4 @@
+using AutoMapper;
 using MHRSLiteBusinessLayer.Contracts;
 using MHRSLiteBusinessLayer.EmailService;
 using MHRSLiteBusinessLayer.Implementations;
@@ -16,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MHRSLiteEntityLayer.Mappings;
 
 namespace MHRSLiteUI
 {
@@ -46,6 +48,8 @@ namespace MHRSLiteUI
             //IClaimsTransformation gördüðü zaman bizim yazdýðý classý üretecek!
             services.AddScoped<IClaimsTransformation, ClaimProvider.ClaimProvider>();
             //********************************
+            services.AddAutoMapper(typeof(Maps));
+
             services.AddAuthorization(opts=>
             {
                 opts.AddPolicy("GenderPolicy", policy =>
