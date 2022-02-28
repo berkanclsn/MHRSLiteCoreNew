@@ -1,0 +1,203 @@
+﻿@{
+    ViewData["Title"] = "Appointment";
+    Layout = "~/Views/Shared/_LayoutMHRS.cshtml";
+}
+
+<div class="row">
+
+    @* Randevu al ve geri butonu *@
+</div>
+<div class="row" style="background-color:whitesmoke; border-radius:4px; padding:10px">
+    <div class="col-md-12">
+        <form asp-controller="Patient" asp-action="SaveAppointment" method="post">
+            <div class="form-group">
+                <span class="text-danger" style="font-weight:bold;margin-right:3px"> * </span>
+                <label for="City" style="font-weight:bold">İL</label>
+                <select id="CitySelect" name="City" class="form-control">
+                    <option selected value="0">***İl Seçiniz***</option>
+                    @foreach (var item in ViewBag.Cities)
+                    {
+                        <option value="@item.Id">@item.CityName</option>
+
+                    }
+                </select>
+
+            </div>
+
+            <div class="form-group">
+                <span class="text-danger" style="font-weight:bold;margin-right:3px"> * </span>
+                <label for="District" style="font-weight:bold">İLÇE</label>
+                <select id="DistrictSelect" name="District" class="form-control">
+                    <option selected value="0">***İlçe Seçiniz***</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <span class="text-danger" style="font-weight:bold;margin-right:3px"> * </span>
+                <label for="Clinic" style="font-weight:bold">KLİNİK</label>
+                <select id="ClinicSelect" name="Clinic" class="form-control">
+                    <option selected value="0">***Klinik Seçiniz***</option>
+                    @foreach (var item in ViewBag.Clinics)
+                    {
+                        <option value="@item.Id">@item.ClinicName</option>
+                    }
+                </select>
+
+            </div>
+
+            <div class="form-group">
+                <span class="text-danger" style="font-weight:bold;margin-right:3px"> * </span>
+                <label for="Hospital" style="font-weight:bold">HASTANE</label>
+                <select id="HospitalSelect" name="Hospital" class="form-control">
+                    <option selected value="0">***Hastane Seçiniz***</option>
+                </select>
+            </div>
+
+            <div class="col-md-12">
+                <div class="col-md-6" style="float:left">
+                    <input id="randevuAra" value="Randevu Ara" class="btn btn-block btn-default" type="button" style="background-color:white; color:red;border:1px solid red" />
+
+                </div>
+                <div class="col-md-6" style="float:right">
+                    <input id="Temizle" value="Temizle" class="btn btn-block btn-default" type="button" style="background-color:red; color:white;" />
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        //CitySelect combodan il seçildiğinde bu fonk çalışacak
+        //change event
+        $('#CitySelect').on('change', function () {
+            //İlçe combosunu temizle ve içine ilk değerini ata.
+            var $dropdown = $("#DistrictSelect");
+            $dropdown.empty();
+            $dropdown.append("<option selected value='0'>***İlçe Seçiniz***</option>");
+            //il değiştiği anda hastane combosu temizlensin ve ilk değeri atansın.
+            var $dropdown = $("#HospitalSelect");
+            $dropdown.empty();
+            $dropdown.append("<option selected value='0'>***Hastane Seçiniz***</option>");
+
+            //İl değiştiğinde clinic resetlensin
+             $('#ClinicSelect')
+                .val(0)
+                .trigger('change');
+
+            //hangi ilin seçili olduğunu değişkene aldık
+            var cityId = this.value;
+            //il combosundan seçilien değer sıfırdan büyükse 
+            // yani gerçekten il seçildiyse aşağıdaki metoda gitsin
+            // o metot aracılığıyla ile ait ilçeleri getirsin
+            if (cityId > 0) {
+                $.ajax({
+                    type: "GET",
+                    url: '/City/GetCityDistricts/' + cityId,
+                    success: function (res) {
+
+                        var $dropdown = $("#DistrictSelect");
+                        $dropdown.empty();
+                        $dropdown.append("<option selected value='0'>***İlçe Seçiniz***</option>");
+                        // bu bir jquery foreach döngüsüdür.
+                        // gelen json sonucunun her birini ilçe combosuna ekler
+                        $.each(res.data, function () {
+                            $dropdown.append($("<option />").val(this.id).text(this.districtName));
+                        });
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    },
+                });
+            }
+        });
+
+        // İlçe combodan ilçe seçildiğinde bu fonk çalışacak
+        // change event
+        $('#DistrictSelect').on('change', function () {
+            // hangi ilçenin seçildiğini değişkene atadık belki işimiz olur diye
+            var districtid = this.value;
+           // İlçe değiştiğinde hastane combosunun içini temizle ve ilk değerini ata
+            var $dropdown = $("#HospitalSelect");
+            $dropdown.empty();
+            $dropdown.append("<option selected value='0'>***Hastane Seçiniz***</option>");
+            //ilçe değiştiğinde clinic combosundaki ilk değer seçili hale gelsin.
+            $('#ClinicSelect')
+                .val(0)
+                .trigger('change');
+        });
+
+        //İller ve Klinik ViewBag ile sayfaya geliyor bu nedenle bu comboların içini boşaltmıyoruz. Sadece ilk değerini seçili hale getiriyoruz.
+        // Klinik seçildiğinde bu fonk çalışacak (change event)
+        $('#ClinicSelect').on('change', function () {
+            //hangi kliniğin seçili olduğunu değişkene aldık
+            var clinicid = this.value;
+            //hangi ilçenin seçili olduğınu değişkene aldık
+            var districtid = $('#DistrictSelect').val();
+            //Hastane combosu temizlenip ilk değeri atandı
+            var $dropdown = $("#HospitalSelect");
+            $dropdown.empty();
+            $dropdown.append("<option selected value='0'>***Hastane Seçiniz***</option>");
+            // Seçilen kliniğin value değeri sıfırdan büyükse
+            // o ilçedeki o kliniklere sahip hastaneleri getirecek
+            if (clinicid > 0) {
+                $.ajax({
+                    type: "GET",
+                    url: '/Hospital/GetHospitalFromClinicId?id=' + clinicid + "&districtid=" + districtid,
+                    success: function (res) {
+                     //Json ile bize gelen hastaneleri hastane combosuna ekledik. (Jquery foreach döngüsü)
+                        $.each(res.data, function () {
+                            $dropdown.append($("<option />").val(this.id).text(this.hospitalName));
+                        });
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    },
+                });
+            }
+
+        });
+        // Hastane seçildiğinde bu fonk. çalışacak. (change event)
+        $('#HospitalSelect').on('change', function () {
+            var id = this.value;
+        });
+        // temizle butonu temizlik yapacak
+        $('#Temizle').on('click', function () {
+            // İller combosunda "il seçiniz" seçili hale gelsin.
+            $('#CitySelect')
+                .val(0)
+                .trigger('change');
+        });
+        // randevu ara butonuna tıklandığında seçili hastane ve kliniğe ait müsait randevular ekrana gelecek...
+        $('#randevuAra').on('click', function () {
+            //seçili ilin idsi
+            var cityid = $('#CitySelect').val();
+            //seçili ilçenin idsi
+            var distid = $('#DistrictSelect').val();
+            //seçili hospitalın idsi
+            var hid = $("#HospitalSelect").val();
+            //seçili kliniğin idsi
+            var cid = $("#ClinicSelect").val();
+            //seçili hekimin idsi
+            //var dr = $('DoctorSelect').val();
+
+            //yeni pencerede müsait randevular listelenecek.
+            //il* , ilçe, klinik*, hastane, hekim
+            //window.open(
+            //    '/Patient/FindAppointment?cityid=' + cityid
+            //    + '&distid=' + distid +
+            //    '&cid='+ cid+ '&hid='+ hid+ '&dr='+ dr);
+
+            window.open(
+                '/Patient/FindAppointment?cityid=' + cityid
+                + '&distid=' + distid +
+                '&cid=' + cid + '&hid=' + hid,
+            "_self");
+
+
+        });
+
+    </script>
+}

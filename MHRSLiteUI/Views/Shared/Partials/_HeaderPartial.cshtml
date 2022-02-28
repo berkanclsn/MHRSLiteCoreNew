@@ -1,0 +1,40 @@
+﻿@inject SignInManager<AppUser> signInManager
+
+<header class="top-header">
+    <nav class="navbar header-nav navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/Home/Index">
+                <img src="~/health-theme-assets/images/MHRS103_yan.png" alt="image" style="width:200px">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-wd" aria-controls="navbar-wd" aria-expanded="false" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbar-wd">
+                <ul class="navbar-nav">
+                    <li><a class="nav-link btn btn-default" style="background-color:#46B3AE; color:white;margin-right:5px" href="/Patient/Index">Randevu Al</a></li>
+                    @if (signInManager.IsSignedIn(Context.User))
+                    {
+                        <li>
+                            <div class="dropdown">
+                                <a class="nav-link btn btn-default dropdown-toggle" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false"
+                                   style="background-color:#46B3AE; color:white;margin-right:10px" href="#">@signInManager.UserManager.FindByNameAsync(Context.User.Identity.Name).Result.Name @signInManager.UserManager.FindByNameAsync(Context.User.Identity.Name).Result.Surname</a>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="background-color: #330136; color:white;">
+                                    <li><a class="dropdown-item" style="color:white;" href="#">Hesap Bilgilerim</a></li>
+                                    <li><a class="dropdown-item" style="color:white;" href="#">Randevu Bilgilerim</a></li>
+                                    <li><a class="dropdown-item" style="color:white;" asp-controller="Account" asp-action="Logout">Çıkış Yap</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    }
+                    else
+                    {
+                        <li><a class="nav-link btn btn-default" style="background-color:#46B3AE; color:white;margin-right:5px" color:white;" asp-controller="Account" asp-action="Login">Giriş Yap</a></li>
+                    }
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>

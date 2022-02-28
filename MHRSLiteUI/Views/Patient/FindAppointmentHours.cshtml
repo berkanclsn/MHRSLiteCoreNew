@@ -1,0 +1,112 @@
+﻿@model List<AvailableDoctorAppointmentHoursViewModel>
+@{
+    ViewData["Title"] = "FindAppointmentHours";
+    Layout = "~/Views/Shared/_LayoutMHRS.cshtml";
+}
+<div style="background-color:#ffffff; border-radius: 18px;">
+    <div class="container-fluid">
+        <div class="row" style=" border-radius: 12px; padding: 30px; min-height: calc(100vh - 300px);">
+            <div class="row col-md-12" style="font-size:20px">
+                <span><a asp-controller="Patient" asp-action="FindAppointment" asp-route-cid="@TempData["ClinicId"]" asp-route-hid="@TempData["HospitalId"]"><i class="fa fa-arrow-left" style="color:black"></i></a>&emsp;Randevu Al</span>
+                @* Randevu al ve geri butonu *@
+            </div>
+            <div class="row col-md-12" style="font-size:20px">
+                <span>&ensp;</span>
+                <span><b>Hekim:</b> @ViewBag.Doctor</span>
+
+            </div>
+
+            <div class="m-4">
+                <ul class="nav nav-tabs" id="myTab">
+
+                    <li class="nav-item">
+                        <a href="#day" class="nav-link active" data-bs-toggle="tab" style="border-bottom: 2px solid blue;">
+                            @DateTime.Now.AddDays(1).ToShortDateString() - @DateTime.Now.AddDays(1).ToString("dddd")
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="accordion" id="myAccordion">
+                        @{
+                            byte sayac = 1;
+                        }
+                        @foreach (var item in Model)
+                        {
+                            if (item.Hours.Count == 0)
+                            {
+                                continue;
+                            }
+                            <div class="accordion-item">
+
+                                <h2 class="accordion-header" id="heading@(sayac)">
+                                    <button style="height:50px" type="button" class="accordion-button collapsed" data-bs-toggle="collapse"
+                                            data-bs-target="#collapse@(sayac)">
+                                        @item.HourBase
+                                    </button>
+                                </h2>
+                                <div id="collapse@(sayac)" class="accordion-collapse collapse" data-bs-parent="#myAccordion">
+                                    <div class="card-body">
+                                        @foreach (var subitem in item.Hours)
+                                        {
+                                            <button onclick="SaveAppointment(@item.HospitalClinicId,'@DateTime.Now.AddDays(1).ToShortDateString()','@subitem','@ViewBag.Doctor')"
+                                                    class="btn btn-primary" style="width:100px;">
+                                                @subitem
+                                            </button>
+
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            sayac++;
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        function SaveAppointment(hcid, date, hour, dr) {
+            console.log(hcid);
+            console.log(hour);
+            console.log(date);
+            Swal.fire({
+                title: dr +'\n için randevuyu onaylıyor musunuz?',
+                showDenyButton: false,
+                showCancelButton: true,
+                confirmButtonText: 'Onayla',
+                cancelButtonText: 'İptal'
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    //randevuyu kaydedecek actiona resulta ulaşmamız lazım.
+                    $.ajax({
+                        type: "GET",
+                        url: '/Patient/SaveAppointment?hcid=' + hcid
+                            + '&date=' + date +
+                            '&hour=' + hour,
+                        success: function (res) {
+                            Swal.fire({
+                                title: res.message,
+                                showDenyButton: false,
+                                showCancelButton: false
+                            }).then((result) => {
+                                window.open("/Patient/Index", "_self");
+                            });
+                        },
+                        error: function (err) {
+                            Swal.fire(err, '', 'danger')
+                        },
+                    });
+
+                }
+                //else if (result.isDenied) {
+                //    Swal.fire('Changes are not saved', '', 'info')
+                //}
+            });
+        };
+
+    </script>
+} 

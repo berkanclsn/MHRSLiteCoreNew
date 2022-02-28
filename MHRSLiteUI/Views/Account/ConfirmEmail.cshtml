@@ -1,0 +1,11 @@
+﻿
+@{
+    ViewData["Title"] = "ConfirmEmail";
+    Layout = "~/Views/Shared/_LayoutAccountMHRS.cshtml";
+}
+
+@if (!string.IsNullOrEmpty(ViewBag.EmailConfirmedMessage))
+{
+<h4 class="text-danger">@ViewBag.EmailConfirmedMessage</h4>
+}
+

@@ -1,0 +1,55 @@
+﻿@model LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_LayoutAccountMHRS.cshtml";
+}
+
+@if (!string.IsNullOrEmpty(TempData["EmailConfirmedMessage"] as String))
+{
+    <h4 class="text-info">@TempData["EmailConfirmedMessage"]</h4>
+}
+
+@if (!string.IsNullOrEmpty(TempData["ConfirmResetPasswordMessage"] as String))
+{
+<h4 class="text-success">@TempData["ConfirmResetPasswordMessage"]</h4>
+}
+
+
+<div class="row">
+    <div class="col-md-6">
+        <div style="text-align:center">
+            <img src="~/health-theme-assets/images/MHRS103_yan.png" style="width:350px" />
+        </div>
+        <h1 style="font-weight:bold">Giriş Yap</h1>
+        <form asp-controller="Account" asp-action="Login" method="post">
+            <div asp-validation-summary="All" class="text-danger">
+            </div>
+            <div class="form-group">
+                <label asp-for="UserName" class="control-label"></label>
+                <input asp-for="UserName" type="text" maxlength="11"
+                       class="form-control" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" type="password"
+                       class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="checkbox" asp-for="RememberMe" /> Beni Hatırla
+                <a style="float:right" class="btn btn-link btn-info" asp-action="ResetPassword">Şifremi unuttum</a>
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Giriş Yap" class="btn btn-default btn-block" style="background-color:#46B3AE; color:white;" />
+                <a class="btn btn-primary btn-block" asp-action="FacebookLogin">Facebook ile Giriş yap</a>
+                <a class="btn btn-danger btn-block" asp-action="GoogleLogin">Google ile Giriş yap</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-md-6">
+        <img src="~/health-theme-assets/images/gallery-03.jpg" style="max-width: 100%; height: auto; position: fixed " />
+    </div>
+</div>

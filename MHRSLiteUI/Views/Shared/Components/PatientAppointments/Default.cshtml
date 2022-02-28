@@ -1,0 +1,65 @@
+﻿@model PastAndFutureAppointmentsViewModel
+
+<div class="m-4">
+    <ul class="nav nav-tabs" id="myTab">
+
+        <li class="nav-item">
+            <a href="#myAppointments" class="nav-link active" data-bs-toggle="tab">Randevularım</a>
+        </li>
+        <li class="nav-item">
+            <a href="#myPastAppointments" class="nav-link" data-bs-toggle="tab">Geçmiş Randevularım</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="myAppointments">
+            <table class="table" style="margin-top:15px;">
+                <tbody>
+                    @foreach (var item in Model.UpcomingAppointments)
+                    {
+                    <tr>
+                        <td style="vertical-align:middle">
+                            <strong>
+                                <span style="background: #fafafa; border: 1px solid #d9d9d9; border-radius: 5px; background-color: rgb(45, 183, 245); color:#fff; padding:5px;">
+                                    @item.AppointmentDate.ToShortDateString() - @item.AppointmentHour
+                                </span>
+                            </strong><br />
+                        </td>
+                        <td>
+                           Hastane<br />
+                           Klinik Doktor
+                        </td>
+
+                    </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+        <div class="tab-pane fade" id="myPastAppointments">
+            <table class="table" style="margin-top:15px">
+                <tbody>
+                    @foreach (var item in Model.PastAppointments)
+                    {
+                    <tr>
+                        <td style="vertical-align:middle">
+                            <strong>
+                                <span style="background: #fafafa; border: 1px solid #d9d9d9; border-radius: 5px; background-color: rgb(45, 183, 245); color:#fff; padding:5px;">
+                                    @item.AppointmentDate.ToShortDateString() - @item.AppointmentHour
+                                </span>
+                            </strong><br />
+
+                        </td>
+                        <td>
+                            Hastane<br />
+                            Klinik Doktor
+                        </td>
+
+                    </tr>
+                    }
+                </tbody>
+            </table>
+
+
+        </div>
+    </div>
+</div>
