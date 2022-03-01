@@ -22,7 +22,7 @@ namespace MHRSLiteEntityLayer.IdentityModels
         public DateTime RegisterDate { get; set; } = DateTime.Now;
         public string Picture { get; set; }
         [DataType(DataType.Date)]
-        public DateTime? BirthDate { get; set; }
+        public DateTime? BirthDay { get; set; }
         [Required(ErrorMessage = "Cinsiyet seçimi gereklidir")]
         public Genders Gender { get; set; }
 

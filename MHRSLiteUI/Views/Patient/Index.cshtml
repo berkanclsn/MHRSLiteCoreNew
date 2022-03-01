@@ -24,9 +24,6 @@
                             <h6 style="color: white;">Hastanede bulunan kliniklerden randevu alabilirsiniz.</h6>
                         </div>
                     </a>
-                    <a asp-controller="Home" asp-action="Deneme" class="btn btn-primary" style="width:100px;">
-                       Deneme Claims
-                    </a>
 
                 </div>
             </div>
@@ -44,3 +41,59 @@
         </div>
     </div>
 </div>
+
+@section Scripts{ 
+    <script type="text/javascript">
+const { success } = require("toastr");
+const { Swal } = require("../../wwwroot/theme-assets/plugins/sweetalert2/sweetalert2.all");
+
+
+        //arrow function
+        function CancelAppointmentBtnClicked(id) {
+            Swal.fire({
+                title: 'Randevuyu iptal etmek istediğinize emin misiniz?',
+                showDenyButton: false,
+                showConfirmButton: true,
+                confirmButtonText: 'Onayla',
+                cancelButtonText: 'İptal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    //randevuyu iptal edecek actiona ulaşması gerekli.
+                    $.ajax({
+                        type: "GET",
+                        url: '/Patient/CancelAppointment/' + id,
+                        success:
+                            function (res) {
+                                Swal.fire({
+                                    title: res.message,
+                                    showDenyButton: false,
+                                    showCancelButton: false,
+                                }).then((result) => {
+                                    window.open("/Patient/Index","_self")
+                                });
+
+                            },
+                        error: 
+                            function(err) {
+                                Swal.fire(err,'', 'danger')
+                            }
+                        
+                    });
+                }
+
+            });
+        }
+        function UpcomingAppointmentExcelBtnClicked() {
+            $.ajax({
+                type: "POST",
+                url: '/Patient/UpcomingAppointmentsExcelExport',
+                success: function (res) {
+                },
+                error: function (err) {
+                    Swal.fire(err, '', 'danger');
+                }
+
+            });
+        }
+    </script>
+}

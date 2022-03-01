@@ -16,9 +16,11 @@ namespace MHRSLiteBusinessLayer.Implementations
         private readonly MyContext _myContext;
         private readonly IMapper _mapper;
         private readonly UserManager<AppUser> _userManager;
-        public UnitOfWork(MyContext myContext)
+        public UnitOfWork(MyContext myContext, IMapper mapper, UserManager<AppUser> userManager)
         {
             _myContext = myContext;
+            _mapper = mapper;
+            _userManager = userManager;
             //UnitOfWork tüm repositoryleri oluşturacak.
             CityRepository = new CityRepository(_myContext);
             DistrictRepository = new DistrictRepository(_myContext);
