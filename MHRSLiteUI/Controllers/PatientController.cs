@@ -2,6 +2,7 @@
 using MHRSLiteBusinessLayer.Contracts;
 using MHRSLiteBusinessLayer.EmailService;
 using MHRSLiteEntityLayer;
+using MHRSLiteEntityLayer.Constants;
 using MHRSLiteEntityLayer.Enums;
 using MHRSLiteEntityLayer.IdentityModels;
 using MHRSLiteEntityLayer.Models;
@@ -330,6 +331,20 @@ namespace MHRSLiteUI.Controllers
                     return Json(new { isSuccess = false, message });
                 }
 
+                #region RomatologyAppointment_ClaimsCheck
+                //Eğer romatoloji randevu istenmiş ise
+                var hcidData = _unitOfWork.HospitalClinicRepository.GetFirstOrDefault(x=>x.Id==hcid,includeProperties:"Hospital,Clinic,Doctor");
+                if (hcidData.Clinic.ClinicName==ClinicsConstants.ROMATOLOGY)
+                {
+                    //claim kontrolü yapılacak
+                    string resultMessage = AvailabilityMessageForRomatologyAppointment(hcidData);
+                    if (!string.IsNullOrEmpty(resultMessage))
+                    {
+                        return Json(new { isSucces = false, message = resultMessage });
+                    }
+                }
+                #endregion
+
                 // randevu kayıt edilecek
                 Appointment patientAppoinment = new Appointment()
                 {
@@ -375,6 +390,49 @@ namespace MHRSLiteUI.Controllers
 
                 message = "HATA: " + ex.Message;
                 return Json(new { isSuccess = false, message });
+            }
+        }
+
+        private string AvailabilityMessageForRomatologyAppointment(HospitalClinic hcidData)
+        {
+            try
+            {
+                string returnMessage = string.Empty;
+                //usera ait aspnetuserclaims tablosunda kayıt varsa ve o kayıtlardan Dahiliye-Romatoloji kaydının valuesu alınacak
+                var claimList = HttpContext.User.Claims.ToList();
+                var claim = claimList.FirstOrDefault(x => x.Type == "");
+                if (claim!=null)
+                {
+                    //2_dd.MM.yyyy
+                    var claimValue = claim.Value;
+                    //yöntem 1
+                    int claimHCID = Convert.ToInt32(claimValue.Substring(0,claimValue.IndexOf('_')));
+                    DateTime claimDate = Convert.ToDateTime(claimValue.Substring(claimValue.IndexOf('_') + 1).ToString());
+
+                    ////yöntem 2
+                    //string[] array = claimValue.Split('_');
+                    //int claimHCID = Convert.ToInt32(array[0]);
+                    //DateTime claimDate = Convert.ToDateTime(array[1].ToString());
+                    var claimHCIDdata = _unitOfWork.HospitalClinicRepository.GetFirstOrDefault(x => x.Id == claimHCID, includeProperties: "Hospital");
+
+                    //claim bilgiler ayıklandı
+                    //Acaba ayıklanan bilgilerdeki hastane ile randevu alınmak istenen hastane aynı mı ?
+                    if (hcidData.Hospital.Id==claimHCIDdata.Hospital.Id)
+                    {
+                        returnMessage = $"Romatoloji için dahiliye muayenesi şarttır. Romatoloji randevusu alabileceğiniz uygun hastane: {claimHCIDdata.Hospital.HospitalName}";
+                    }
+                    
+                }
+                else
+                {
+                    returnMessage = "DİKKAT! Romatolojiye randevu alabilmeniz için Dahiliyede son bir ay içinde muayene olmuş olmanız gereklidir!";
+                }
+                return returnMessage;
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
 
