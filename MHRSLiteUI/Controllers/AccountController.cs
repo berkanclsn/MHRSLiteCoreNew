@@ -44,7 +44,7 @@ namespace MHRSLiteUI.Controllers
             _emailSender = emailSender;
             _unitOfWork = unitOfWork;
             _configuration = configuration;
-            CheckRoles();
+            
         }
 
         private void CheckRoles()
