@@ -25,7 +25,7 @@ namespace MHRSLiteUI.QuartzWork
             {
                 //Appointment tablosundaki aktif randevuların hepsini getirsin
                 //Tarihi geçmiş olanları past statusüne çeksin
-                var appointments = _unitOfWork.AppointmentRepository.GetAll(x => x.AppointmentStatus == AppointmentStatus.Active);
+                var appointments = _unitOfWork.AppointmentRepository.GetAll(x => x.AppointmentStatus == AppointmentStatus.Active).ToList();
                 foreach (var item in appointments)
                 {
                     int itemHour = Convert.ToInt32(item.AppointmentHour.Substring(0, 2));
@@ -46,10 +46,10 @@ namespace MHRSLiteUI.QuartzWork
                 _logger.LogInformation("AppointmentStatus updated");
                 return Task.CompletedTask;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                return Task.CompletedTask;
 
-                throw;
             }
         }
     }

@@ -116,7 +116,7 @@ namespace MHRSLiteBusinessLayer.Implementations
         }
 
         /// <summary>
-        /// Verilen tarihten büyük olan iptal edilmemiş, aktif ya da geçmiş DAHİLİYE randevularını getirir
+        /// Verilen tarihten büyük olan iptal edilmemiş geçmiş DAHİLİYE randevularını getirir
         /// </summary>
         /// <param name="dt"></param>
         /// <returns></returns>
@@ -131,11 +131,11 @@ namespace MHRSLiteBusinessLayer.Implementations
                              join c in _myContext.Clinics
                              on hcid.ClinicId equals c.Id
                              where c.ClinicName
-                             == ClinicsConstants.INTERNAL_MEDICINE && a.AppointmentStatus != AppointmentStatus.Cancelled
+                             == ClinicsConstants.INTERNAL_MEDICINE && a.AppointmentStatus == AppointmentStatus.Past
                              select a;
                 if (dt!=null)
                 {
-                    var date = Convert.ToDateTime(dt.Value.ToShortDateString());
+                    var date = Convert.ToDateTime(dt.Value.ToString("dd/MM/yyyy"));
                     result = result.Where(x => x.AppointmentDate>=date);
                 }
                 foreach (var item in result)

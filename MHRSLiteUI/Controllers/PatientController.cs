@@ -400,7 +400,7 @@ namespace MHRSLiteUI.Controllers
                 string returnMessage = string.Empty;
                 //usera ait aspnetuserclaims tablosunda kayıt varsa ve o kayıtlardan Dahiliye-Romatoloji kaydının valuesu alınacak
                 var claimList = HttpContext.User.Claims.ToList();
-                var claim = claimList.FirstOrDefault(x => x.Type == "");
+                var claim = claimList.FirstOrDefault(x => x.Type == "DahiliyeRomatoloji");
                 if (claim!=null)
                 {
                     //2_dd.MM.yyyy
@@ -417,7 +417,7 @@ namespace MHRSLiteUI.Controllers
 
                     //claim bilgiler ayıklandı
                     //Acaba ayıklanan bilgilerdeki hastane ile randevu alınmak istenen hastane aynı mı ?
-                    if (hcidData.Hospital.Id==claimHCIDdata.Hospital.Id)
+                    if (hcidData.Hospital.Id!=claimHCIDdata.Hospital.Id)
                     {
                         returnMessage = $"Romatoloji için dahiliye muayenesi şarttır. Romatoloji randevusu alabileceğiniz uygun hastane: {claimHCIDdata.Hospital.HospitalName}";
                     }
