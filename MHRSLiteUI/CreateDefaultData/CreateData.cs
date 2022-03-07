@@ -28,7 +28,68 @@ namespace MHRSLiteUI.CreateDefaultData
             //canlıya çıkıldığında bu metot olmayacak
             #if DEBUG
             CreateDistricts(environment, unitOfWork);
+            CreateHospitals(environment, unitOfWork);
             #endif
+        }
+
+        private static void CreateHospitals(IWebHostEnvironment environment, IUnitOfWork unitOfWork)
+        {
+            try
+            {
+                var hospitalList = unitOfWork.HospitalRepository.GetAll().ToList();
+                //Provide a path for excel file
+                string path = Path.Combine(environment.WebRootPath, "Excels");
+                string fileName = Path.GetFileName("Hospitals.xlsx");
+                string filePath = Path.Combine(path, fileName);
+                using (var excelBook = new XLWorkbook(filePath))
+                {
+                    var rows = excelBook.Worksheet(1).RowsUsed();
+                    foreach (var item in rows)
+                    {
+                        if (item.RowNumber() > 1 && item.RowNumber() <= rows.Count())
+                        {
+                            var cell = item.Cell(1).Value;
+                            //ilçe id
+                            var districtId = Convert.ToInt32(item.Cell(2).Value);
+                            //adres
+                            var address = item.Cell(3).Value; //Hastane Adresi
+                            //email
+                            var email = item.Cell(4).Value; //hastane emaili
+                            //Latitude
+                            var latitude = item.Cell(5).Value; //hastane latitude
+                            //Longtitude
+                            var longtitude = item.Cell(6).Value; //hastane longtitude
+                            //PhoneNumber
+                            var phoneNumber = item.Cell(7).Value; //hastane tel
+
+                            var district = unitOfWork.DistrictRepository.GetFirstOrDefault(x => x.Id == districtId);
+                            Hospital hospital = new Hospital()
+                            {
+                                HospitalName=cell.ToString(),
+                                DistrictId=districtId,
+                                CreatedDate=DateTime.Now,
+                                Address=address.ToString(),
+                                Email=email.ToString(),
+                                Latitude=latitude.ToString(),
+                                Longitude=longtitude.ToString(),
+                                PhoneNumber=phoneNumber.ToString()
+
+                            };
+                            if (hospitalList.Count(x=>x.HospitalName.ToLower()==cell.ToString().ToLower() && x.DistrictId == districtId)==0)
+                            {
+                                unitOfWork.HospitalRepository.Add(hospital);
+                            }
+
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
         }
 
         private static void CreateDistricts(IWebHostEnvironment environment, IUnitOfWork unitOfWork)
