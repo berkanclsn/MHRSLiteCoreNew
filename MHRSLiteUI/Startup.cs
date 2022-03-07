@@ -66,7 +66,12 @@ namespace MHRSLiteUI
              {
                  options.IdleTimeout = TimeSpan.FromSeconds(60);
              });
-
+            //Google api'den alýnacak clientId ve clientSecret burada projeye dahil edilecek(secret.json'a ekleyip buraya eklemen lazým)
+            services.AddAuthentication().AddGoogle(options =>
+            {
+                options.ClientId = Configuration[""];
+                options.ClientSecret = Configuration[""];
+            });
             //**********************
             services.AddIdentity<AppUser, AppRole>(opts =>
              {
