@@ -69,8 +69,8 @@ namespace MHRSLiteUI
             //Google api'den alýnacak clientId ve clientSecret burada projeye dahil edilecek(secret.json'a ekleyip buraya eklemen lazým)
             services.AddAuthentication().AddGoogle(options =>
             {
-                options.ClientId = Configuration[""];
-                options.ClientSecret = Configuration[""];
+                options.ClientId = Configuration["Authentication:Google:ClientId"];
+                options.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
             });
             //**********************
             services.AddIdentity<AppUser, AppRole>(opts =>
